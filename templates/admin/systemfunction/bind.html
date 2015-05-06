@@ -1,0 +1,58 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理-{{ nav.subNav.name }}
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    {% include "admin/nav.html" %}
+
+                    <form class="form-search" method="post">
+                        {% csrf_token %}
+                        <input type="text" disabled="disabled" value="{{ role.name }}"/>
+                        <input type="hidden" value="{{ role.id }}" name="role_id" />
+                        <button type="submit" class="btn btn-primary" id="addSystemfunction"><i class="icon-plus icon-white"></i> 绑定资源</button>
+                        <p> </p>
+                        <div class="tabbable tabs-below">
+                        {% for fun in subsystemfuns %}
+                        <div class="well well-small">
+                        <div>
+                            <blockquote>
+                                <p>
+                                    <label class="checkbox">
+                                        <input type="checkbox" {% if fun.parent.id in checked %}checked{% endif %} name="systemfun_{{ fun.parent.id }}" onclick="checkAll({{ fun.parent.id }}, this);"/> <strong>{{ fun.parent.name }}</strong>
+                                    </label>
+                                </p>
+                            </blockquote>
+                            {% for system in fun.son  %}
+                                <div class="span2">
+                                    <label class="checkbox">
+                                        <input type="checkbox" {% if system.id in checked %}checked{% endif %} name="systemfun_{{ system.id }}" class="checkbox_{{ fun.parent.id }}"/>  {{ system.name }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        <div class="clearfix"></div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    </form>
+                </div>
+            <div>
+
+         </div>
+       </div>
+     </div>
+ </div>
+<script type="text/javascript">
+function checkAll(id, obj) {
+    $(".checkbox_" + id).attr("checked", obj.checked);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理-{{ nav.subNav.name }}
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    {% include "admin/nav.html" %}
+
+                    <form class="form-search">
+                        <button type="button" class="btn btn-primary" id="addCategory"><i class="icon-plus icon-white"></i> 增加分类</button>
+                    </form>
+
+                    <div class="tabbable tabs-below">
+                            {% for category in categorys %}
+                            <div class="input-append span3">
+                                <input class="span2 btn {% if category.status == 0 %}btn-inverse{% endif %}" type="button" value="{{ category.name }}"/>
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle {% if category.status == 0 %}btn-inverse{% endif %}" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="javascript:void(0);" onclick="editCategory({{ category.id }});"><i class="icon-edit"></i> 修改</a></li>
+                                        <li><a href="javascript:void(0);" onclick="delCategory({{ category.id }});"><i class="icon-remove"></i> 删除</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            <div>
+
+         </div>
+       </div>
+     </div>
+ </div>
+<script type="text/javascript">
+
+    $(function(){
+        $("#addCategory").click(function(){
+            $.ajax( {
+                url: "{% url 'category.add'%}",
+                data: {},
+                type: "GET",
+                dataType: "html",
+                success: function(data){
+                    $.box({
+                        title: "增加分类",
+                        html: data,
+                        ok: "确认增加",
+                        cancel: "取消",
+                        height: "350px",
+                        okfn: function(){
+                            var checkIds = ["inputName", "inputUrl", "inputPid", "inputOrderdisplay"];
+                            for(var i = 0; i < checkIds.length; i++){
+                                checkInput(checkIds[i]);
+                            }
+                            if($("#addCategoryForm").find(".alert-error").length == 0){
+                                $("#addCategoryForm").submit();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+    });
+
+function editCategory(id){
+    if(id){
+        $.ajax( {
+            url: "{% url 'category.add'%}",
+            data: {id: id},
+            type: "GET",
+            dataType: "html",
+            success: function(data){
+                $.box({
+                    title: "修改分类信息",
+                    html: data,
+                    ok: "确认修改",
+                    cancel: "取消",
+                    height: "350px",
+                    okfn: function(){
+                        $("#addCategoryForm").submit();
+                    }
+                });
+            }
+        });
+    }
+}
+
+function delCategory(id) {
+    if(id) {
+        $.confirm("是否确认删除该分类和它下面的所有文章？", function(){
+            $.ajax( {
+                url: "{% url 'category.delete'%}",
+                data: {id: id},
+                type: "GET",
+                dataType: "text",
+                cache: false,
+                success: function(data){
+                    if(data == "1") {
+                        window.location.href = "{% url 'category.list' %}";
+                    } else {
+                        alert("操作失败");
+                    }
+                }
+            });
+        });
+    }
+}
+</script>
+{% endblock %}

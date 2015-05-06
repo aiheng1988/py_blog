@@ -1,0 +1,92 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理-{{ nav.subNav.name }}
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    {% include "admin/nav.html" %}
+
+                    <form class="form-search" method="post" action="{% url 'tag.add' %}">
+                        {% csrf_token %}
+                        <input type="text" name="tag" placeholder="标签"/>
+                        <button type="submit" class="btn btn-primary" id="addTag"><i class="icon-plus icon-white"></i> 增加标签</button>
+                    </form>
+
+                    <div class="tabbable tabs-below">
+                            {% for tag in tags %}
+                            <div class="input-append span3">
+                                <input class="span2 btn {% if tag.status == 0 %}btn-inverse{% endif %}" type="button" value="{{ tag.name }} ({{ tag.counts }})"/>
+                                <div class="btn-group">
+                                    <button class="btn dropdown-toggle {% if tag.status == 0 %}btn-inverse{% endif %}" data-toggle="dropdown">
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="javascript:void(0);" onclick="editTag({{ tag.id }});"><i class="icon-edit"></i> 修改</a></li>
+                                        <li><a href="javascript:void(0);" onclick="delTag({{ tag.id }});"><i class="icon-remove"></i> 删除</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            <div>
+
+         </div>
+       </div>
+     </div>
+ </div>
+<script type="text/javascript">
+
+function editTag(id){
+    if(id){
+        $.ajax( {
+            url: "{% url 'tag.view'%}",
+            data: {id: id},
+            type: "GET",
+            dataType: "html",
+            success: function(data){
+                $.box({
+                    title: "修改标签信息",
+                    html: data,
+                    ok: "确认修改",
+                    cancel: "取消",
+                    height: "150px",
+                    okfn: function(){
+                        $("#addTagForm").submit();
+                    }
+                });
+            }
+        });
+    }
+}
+
+function delTag(id) {
+    if(id) {
+        $.confirm("是否确认删除该标签和它下面的所有文章？", function(){
+            $.ajax( {
+                url: "{% url 'tag.delete'%}",
+                data: {id: id},
+                type: "GET",
+                dataType: "text",
+                cache: false,
+                success: function(data){
+                    if(data == "1") {
+                        window.location.href = "{% url 'tag.list' %}";
+                    } else {
+                        alert("操作失败");
+                    }
+                }
+            });
+        });
+    }
+}
+</script>
+{% endblock %}

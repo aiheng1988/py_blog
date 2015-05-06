@@ -1,0 +1,31 @@
+<form class="form-horizontal" method="POST" action="{% url 'role.add' %}" id="addRoleForm">
+    {% csrf_token %}
+    <input type="hidden" name="id" id="inputId" value="{{ role.id }}" />
+    <div class="control-group">
+        <label class="control-label" for="inputName">角色名称</label>
+        <div class="controls">
+            <input type="text" name="name" id="inputName" placeholder="角色名称" value="{{ role.name }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputOrderDisplay">排序</label>
+        <div class="controls">
+            <input type="text" class="input-mini" name="orderdisplay" id="inputOrderDisplay" value="{{ role.orderdisplay | default:0 }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputPId">父角色ID</label>
+        <div class="controls">
+            <input type="text" class="input-mini" name="pid" id="inputPId" value="{{ role.pid | default:0 }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputStatus">状态</label>
+        <div class="controls">
+            <select class="input-small" name="status" id="inputStatus">
+                <option value="1">可用</option>
+                <option value="0" {% if role.status == 0 %} selected="selected"{% endif %}>不可用</option>
+            </select>
+        </div>
+    </div>
+</form>

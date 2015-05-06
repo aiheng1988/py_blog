@@ -1,0 +1,134 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理-{{ nav.subNav.name }}
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    {% include "admin/nav.html" %}
+
+                    <form class="form-search">
+                        <button type="button" class="btn btn-primary" id="addSystemfunction"><i class="icon-plus icon-white"></i> 增加资源</button>
+                    </form>
+
+                    <div class="tabbable tabs-below">
+                        {% for fun in subsystemfuns %}
+                        <div class="well well-small parent-content">
+                        <ul class="nav nav-tabs">
+                            <li class="dropdown">
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">{{ fun.parent.name }} <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="javascript:void(0);" onclick="addObj({'inputPId': {{ fun.parent.id }}});"><i class="icon-plus"></i> 增加子资源</a></li>
+                                    <li><a href="javascript:void(0);" onclick="editObj({{ fun.parent.id }});"><i class="icon-edit"></i> 修改</a></li>
+                                    <li><a href="javascript:void(0);" onclick="delUser({{ fun.parent.id }});"><i class="icon-remove"></i> 删除</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="sub-content">
+                            <div id="{{ fun.parent.id }}" class="tab-pane">
+                                {% for system in fun.son  %}
+                                    <div class="input-append ">
+                                        <input class="span2 btn" type="button" value="{{ system.name }}" {% if system.status == 0 %}disabled="disabled" {% endif %}/>
+                                        <div class="btn-group">
+                                            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="javascript:void(0);" onclick="editObj({{ system.id }});"><i class="icon-edit"></i> 修改</a></li>
+                                                <li><a href="javascript:void(0);" onclick="delUser({{ system.id }});"><i class="icon-remove"></i> 删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            <div>
+
+         </div>
+       </div>
+     </div>
+ </div>
+<script type="text/javascript">
+$(function(){
+    $("#addSystemfunction").click(function(){
+        addObj({});
+    });
+});
+
+function addObj(params) {
+    $.ajax( {
+        url: "{% url 'systemfunction.add'%}",
+        data: params,
+        type: "GET",
+        dataType: "html",
+        success: function(data){
+            $.box({
+                title: "增加资源信息",
+                html: data,
+                ok: "确认增加",
+                cancel: "取消",
+                height: "400px",
+                params: params,
+                okfn: function(){
+                    $("#addSystemfunctionForm").submit();
+                }
+            });
+        }
+    });
+}
+
+function editObj(id){
+    if(id){
+        $.ajax( {
+            url: "{% url 'systemfunction.add'%}",
+            data: {id: id},
+            type: "GET",
+            dataType: "html",
+            success: function(data){
+                $.box({
+                    title: "修改资源信息",
+                    html: data,
+                    ok: "确认修改",
+                    cancel: "取消",
+                    height: "400px",
+                    okfn: function(){
+                        $("#addSystemfunctionForm").submit();
+                    }
+                });
+            }
+        });
+    }
+}
+
+function delUser(id) {
+    if(id){
+        $.confirm("是否确认删除？", function(){
+            $.ajax( {
+                url: "{% url 'systemfunction.delete'%}",
+                data: {id: id},
+                type: "GET",
+                dataType: "html",
+                success: function(data){
+                    if(data == "1"){
+                        window.location.href = "{% url 'systemfunction.list'%}";
+                    } else {
+                        alert("操作失败！");
+                    }
+                }
+            });
+        });
+    }
+}
+</script>
+{% endblock %}

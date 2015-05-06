@@ -1,0 +1,19 @@
+<form class="form-horizontal" method="POST" action="{% url 'tag.add' %}" id="addTagForm">
+    {% csrf_token %}
+    <input type="hidden" name="id" id="inputId" value="{{ tag.id }}" />
+    <div class="control-group">
+        <label class="control-label" for="inputTag">标签</label>
+        <div class="controls">
+            <input type="text" name="tag" id="inputTag" placeholder="标签" value="{{ tag.name }}"  />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputStatus">状态</label>
+        <div class="controls">
+            <select class="input-small" name="status" id="inputStatus">
+                <option value="1">可用</option>
+                <option value="0" {% if tag.status == 0 %} selected="selected"{% endif %}>不可用</option>
+            </select>
+        </div>
+    </div>
+</form>

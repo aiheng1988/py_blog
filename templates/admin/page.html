@@ -1,0 +1,61 @@
+<div class="pagination pagination-right">
+    <ul id="_page">
+        <li>正在载入分页条…</li>
+    </ul>
+</div>
+<script type="text/javascript">
+    // 加载分页信息
+    $(function(){
+        var start_page=1, end_page=1;
+        var pagesize = 15, showpage = 8;;
+        var total_count = parseInt($("#total_count").val());
+        var curr_page = parseInt($("#curr_page").val());
+        var total_page = total_count % pagesize == 0 ?  div(total_count, pagesize) : div(total_count, pagesize) + 1;
+        var $pre = $("<li><a href='javascript:void(0);'>上一页</a></li>");
+        var $next = $("<li><a href='javascript:void(0);'>下一页</a></li>");
+        $("#_page").html($pre);
+        $pre.after($next);
+        if(total_page <= showpage) {
+            start_page = 1;
+            end_page = total_page;
+        } else if(curr_page > (showpage / 2) && (curr_page + (showpage / 2)) < total_page){
+            start_page = curr_page - (showpage / 2);
+            end_page = curr_page + (showpage / 2);
+        } else if(curr_page <= (showpage / 2)){
+            start_page = 1;
+            end_page = showpage;
+        } else if(curr_page >= total_page - (showpage / 2)){
+            start_page = total_page - showpage;
+            end_page = total_page;
+        }
+        for(var i= start_page; i<= end_page; i++){
+            var $i;
+            if(curr_page == i){
+                $i = $("<li class='active'><a href='javascript:void(0);'>" + i + "</a></li>");
+            } else {
+                $i = $("<li><a href='javascript:void(0);'>" + i + "</a></li>");
+            }
+            $next.before($i);
+            $i.click(function(){
+                $("#curr_page").val($(this).find("a").text());
+                $("#pageform").submit();
+            });
+        }
+        $pre.click(function(){
+            var curr_page = parseInt($("#curr_page").val());
+            $("#curr_page").val(curr_page > 1 ? curr_page-1 : 1);
+            $("#pageform").submit();
+        });
+        $next.click(function(){
+            var curr_page = parseInt($("#curr_page").val());
+            $("#curr_page").val(curr_page < total_page ? (curr_page+1) : total_page);
+            $("#pageform").submit();
+        });
+        if($pre.next().find("a").text() != "1") {
+            $pre.after("<li><span>…</span></li>");
+        }
+        if($next.prev().find("a").text() != total_page) {
+            $next.before("<li><span>…</span></li>");
+        }
+    });
+</script>

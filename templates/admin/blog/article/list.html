@@ -1,0 +1,97 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理-{{ nav.subNav.name }}
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    {% include "admin/nav.html" %}
+                    <form class="form-search" method="post" action="{% url "article.list" %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="curr_page" value="1"/>
+                        <input type="text" class="search_input" value="{{ title }}" name="title" placeholder="标题"/>
+                        <select name="status" class="search_input">
+                            <option value="-1">--状态--</option>
+                            <option value="1" {% if status == "1" %}selected="selected"{% endif %}>已发布</option>
+                            <option value="0" {% if status == "0" %}selected="selected"{% endif %}>未发布</option>
+                        </select>
+                        <select name="category_id" class="search_input">
+                            <option value="0">--文章分类--</option>
+                            {% for category in categorys %}
+                            <option value="{{ category.id }}" {% ifequal category_id category.id %}selected="selected"{% endifequal %}>{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn"><i class="icon-search"></i> 查询</button>
+                    </form>
+                    <table class="table table-bordered">
+                        <tr class="th">
+                            <th>编号</th>
+                            <th>标题</th>
+                            <th>作者</th>
+                            <th>发布时间</th>
+                            <th>分类</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        {% for article in articles %}
+                        <tr class="tr" id="tr_{{ article.id }}">
+                            <td>{{ article.id }}</td>
+                            <td>{{ article.title }}</td>
+                            <td>{{ article.author }}</td>
+                            <td>{{ article.addtime |date:"Y-m-d" }}</td>
+                            <td>{{ article.category.name }}</td>
+                            <td>{% if article.status == 1 %}<span class="label label-success">已发布</span>{% else %}<span class="label label-inverse">未发布</span>{% endif %}</td>
+                            <td>
+                                <a href="{% url 'article.add'%}?id={{ article.id }}"><i class="icon-edit"></i></a>
+                                <a href="javascript:void(0);" onclick="delArticle({{ article.id }});"><i class="icon-remove"></i></a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    {% include "admin/page.html" %}
+                    {% block other_page_params %}
+                    <input type="hidden" name="title" value="{{ title }}"/>
+                    <input type="hidden" name="status" value="{{ status }}"/>
+                    <input type="hidden" name="category_id" value="{{ category_id }}"/>
+                    {% endblock %}
+                </div>
+            <div>
+
+         </div>
+       </div>
+     </div>
+ </div>
+<script type="text/javascript">
+    // del article js
+    function delArticle(id) {
+        if(id) {
+            $.confirm("是否确认删除该条记录？", function(){
+                $.ajax( {
+                    url: "{% url 'article.delete'%}",
+                    data: {id: id},
+                    type: "GET",
+                    dataType: "text",
+                    cache: false,
+                    success: function(data){
+                        if(data == "1") {
+                           if($("tr[id^=tr_]").length > 2){
+                               $("#tr_" + id).remove();
+                           }else {
+                               window.location.href = '{% url "article.list" %}';
+                           }
+                        } else {
+                            alert("操作失败");
+                        }
+                    }
+                });
+            });
+        }
+    }
+
+</script>
+{% endblock %}

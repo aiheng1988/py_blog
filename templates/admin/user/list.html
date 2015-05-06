@@ -1,0 +1,117 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理-{{ nav.subNav.name }}
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    {% include "admin/nav.html" %}
+
+                    <form class="form-search" method="post">
+                        {% csrf_token %}
+                        <select class="input-small" name="search_type">
+                            <option value="1">用户名</option>
+                            <option value="2">姓名</option>
+                            <option value="3">邮箱</option>
+                        </select>
+                        <input type="text" name="search_value"/>
+                        <button type="submit" class="btn"><i class="icon-search"></i> 查询</button>
+                        <button type="button" class="btn btn-primary" id="addUser"><i class="icon-plus icon-white"></i> 增加用户</button>
+                    </form>
+                    <table class="table table-bordered">
+                        <tr class="th">
+                            <th>编号</th>
+                            <th>姓名</th>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>加入时间</th>
+                            <th>最后登陆时间</th>
+                            <th>操作</th>
+                        </tr>
+                        {% for u in users %}
+                        <tr class="tr">
+                            <td>{{ u.id }}</td>
+                            <td>{{ u.nick }}</td>
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.mail }}</td>
+                            <td>{{ u.jointime | date:"Y-m-d H:i" }}</td>
+                            <td>{{ u.lastlogintime | date:"Y-m-d H:i:s" }}</td>
+                            <td>
+                                <a href="{% url 'role.bindUser' %}?id={{ u.id }}"><i class="icon-plus"></i>
+                                <a href="javascript:void(0);" onclick="editUser({{ u.id }},'{% url 'user.add'%}');"><i class="icon-edit"></i></a>
+                                <a href="javascript:void(0);" onclick="delUser({{ u.id }});"><i class="icon-remove"></i></a></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            <div>
+
+         </div>
+       </div>
+     </div>
+ </div>
+<script type="text/javascript">
+    $(function(){
+        $("#addUser").click(function(){
+            $.ajax( {
+                url: "{% url 'user.add'%}",
+                data: {},
+                type: "GET",
+                dataType: "html",
+                success: function(data){
+                    $.box({
+                        title: "增加用户",
+                        html: data,
+                        ok: "确认增加",
+                        cancel: "取消",
+                        height: "250px",
+                        width: "480px",
+                        okfn: function(){
+                            var checkIds = ["inputUsername", "inputNick", "inputPassword", "inputPassword2", "inputEmail"];
+                            for(var i = 0; i < checkIds.length; i++){
+                                checkInput(checkIds[i]);
+                            }
+                            if($("#inputPassword").val() != $("#inputPassword2").val()){
+                                alert("两次密码不一致");
+                                return false;
+                            }
+                            if($("#addUserForm").find(".alert-error").length == 0){
+                                $("#addUserForm").submit();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+    });
+    // user js
+    function delUser(id) {
+        if(id) {
+            $.confirm("是否确认删除该条记录？", function(){
+                $.ajax( {
+                    url: "{% url 'user.delete'%}",
+                    data: {id: id},
+                    type: "GET",
+                    dataType: "text",
+                    cache: false,
+                    success: function(data){
+                        if(data == "1") {
+                            window.location.href = "{% url 'user.list' %}";
+                        } else {
+                            alert("操作失败");
+                        }
+                    }
+                });
+            });
+        }
+    }
+
+</script>
+{% endblock %}

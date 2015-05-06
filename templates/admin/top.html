@@ -1,0 +1,21 @@
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <div class="nav-collapse">
+                <div class="pull-left">
+                    <b class="brand">后台信息管理</b>
+                </div>
+                <ul class="nav pull-right">
+                    <li><a href="javascript:void(0);">欢迎您, {{ request.session.user }}</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user"></i>系统操作 <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:void(0); " onclick="editUser({{ request.session.user_id }}, '{% url 'user.add'%}');"><i class="icon-pencil"></i> 修改资料</a></li>
+                            <li><a href="#" onclick="$.confirm('是否确认退出系统？', function(){window.location.href = '{% url 'logout' %}';});"><i class="icon-off"></i> 退出系统</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

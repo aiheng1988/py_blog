@@ -1,0 +1,144 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理-{{ nav.subNav.name }}
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    {% include "admin/nav.html" %}
+
+                    <form class="form-search">
+                        <button type="button" class="btn btn-primary" id="addRole"><i class="icon-plus icon-white"></i> 增加角色</button>
+                    </form>
+
+                    <div class="tabbable tabs-below">
+                        {% for role in roles %}
+                        <div class="well well-small">
+                        <ul class="nav nav-tabs">
+                            <li class="dropdown">
+                                <a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">{{ role.parent.name }} <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="javascript:void(0);" onclick="addObj({'inputPId': {{ role.parent.id }}});"><i class="icon-plus"></i> 增加子角色</a></li>
+                                    <li><a href="javascript:void(0);" onclick="addSystemfun({{ role.parent.id }});"><i class="icon-plus"></i> 绑定资源</a></li>
+                                    <li><a href="javascript:void(0);" onclick="editObj({{ role.parent.id }});"><i class="icon-edit"></i> 修改</a></li>
+                                    <li><a href="javascript:void(0);" onclick="delUser({{ role.parent.id }});"><i class="icon-remove"></i> 删除</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="sub-content2">
+                            <div id="{{ role.parent.id }}" class="tab-pane">
+                                {% for srole in role.son  %}
+                                    <div class="input-append">
+                                        <input class="span2 btn" type="button" value="{{ srole.name }}" {% if srole.status == 0 %}disabled="disabled" {% endif %}/>
+                                        <div class="btn-group">
+                                            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                                <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="javascript:void(0);" onclick="addSystemfun({{ srole.id }});"><i class="icon-plus"></i> 绑定资源</a></li>
+                                                <li><a href="javascript:void(0);" onclick="editObj({{ srole.id }});"><i class="icon-edit"></i> 修改</a></li>
+                                                <li><a href="javascript:void(0);" onclick="delUser({{ srole.id }});"><i class="icon-remove"></i> 删除</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            <div>
+
+         </div>
+       </div>
+     </div>
+ </div>
+<script type="text/javascript">
+$(function(){
+    $("#addRole").click(function(){
+        addObj({});
+    });
+});
+
+function addObj(params) {
+    $.ajax( {
+        url: "{% url 'role.add'%}",
+        data: params,
+        type: "GET",
+        dataType: "html",
+        success: function(data){
+            $.box({
+                title: "增加角色信息",
+                html: data,
+                ok: "确认增加",
+                cancel: "取消",
+                height: "200px",
+                width: "450px",
+                params: params,
+                okfn: function(){
+                    $("#addRoleForm").submit();
+                }
+            });
+        }
+    });
+}
+
+function editObj(id){
+    if(id){
+        $.ajax( {
+            url: "{% url 'role.add'%}",
+            data: {id: id},
+            type: "GET",
+            dataType: "html",
+            success: function(data){
+                $.box({
+                    title: "修改角色信息",
+                    html: data,
+                    ok: "确认修改",
+                    cancel: "取消",
+                    height: "200px",
+                    width: "450px",
+                    okfn: function(){
+                        $("#addRoleForm").submit();
+                    }
+                });
+            }
+        });
+    }
+}
+
+function delUser(id) {
+    if(id){
+        $.confirm("是否确认删除？", function(){
+            $.ajax( {
+                url: "{% url 'role.delete'%}",
+                data: {id: id},
+                type: "GET",
+                dataType: "html",
+                success: function(data){
+                    if(data == "1"){
+                        window.location.href = "{% url 'role.list'%}";
+                    } else {
+                        alert("操作失败！");
+                    }
+                }
+            });
+        });
+    }
+}
+
+function addSystemfun(id) {
+    if(id) {
+        window.open ("{% url 'systemfunction.bindRole' %}?id=" + id) ;
+    }
+}
+</script>
+{% endblock %}

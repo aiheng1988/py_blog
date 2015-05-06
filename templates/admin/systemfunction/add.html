@@ -1,0 +1,55 @@
+<form class="form-horizontal" method="POST" action="{% url 'systemfunction.add' %}" id="addSystemfunctionForm">
+    {% csrf_token %}
+    <input type="hidden" name="id" id="inputId" value="{{ systemfunction.id }}" />
+    <div class="control-group">
+        <label class="control-label" for="inputName">资源名称</label>
+        <div class="controls">
+            <input type="text" name="name" id="inputName" placeholder="资源名称" value="{{ systemfunction.name }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputUrl">资源地址</label>
+        <div class="controls">
+            <input type="text" name="url" id="inputUrl" placeholder="资源地址" value="{{ systemfunction.url }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputAccessUrl">可访问地址</label>
+        <div class="controls">
+            <input type="text" class="input-xlarge" name="accessurl" id="inputAccessUrl" placeholder="可访问地址" value="{{ systemfunction.accessurl }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputOrderDisplay">排序</label>
+        <div class="controls">
+            <input type="text" class="input-mini" name="orderdisplay" id="inputOrderDisplay" value="{{ systemfunction.orderdisplay | default:0 }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputPId">父资源ID</label>
+        <div class="controls">
+            <input type="text" class="input-mini" name="pid" id="inputPId" value="{{ systemfunction.pid | default:0 }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputPId">Icon标签</label>
+        <div class="controls">
+            <input type="text" class="input-large" name="icon" id="inputIcon" value="{{ systemfunction.icon|default:'icon-list' }}" placeholder="Icon标签"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputIsMenu">是否是菜单</label>
+        <div class="controls">
+            <input type="checkbox" id="inputIsMenu" name="ismenu" value="1" {% if systemfunction.ismenu == 1 %}checked="checked"{% endif %}/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputStatus">状态</label>
+        <div class="controls">
+            <select class="input-small" name="status" id="inputStatus">
+                <option value="1">可用</option>
+                <option value="0" {% if systemfunction.status == 0 %} selected="selected"{% endif %}>不可用</option>
+            </select>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,55 @@
+<form class="form-horizontal" method="POST" action="{% url 'category.add' %}" id="addCategoryForm">
+    {% csrf_token %}
+    <input type="hidden" name="id" id="inputId" value="{{ category.id }}" />
+    <div class="control-group">
+        <label class="control-label" for="inputName">分类</label>
+        <div class="controls">
+            <input type="text" name="name" id="inputName" placeholder="分类" value="{{ category.name }}" />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputUrl">地址</label>
+        <div class="controls">
+            <input type="text" name="url" id="inputUrl" placeholder="地址" value="{{ category.url }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputPid">父ID</label>
+        <div class="controls">
+            <input type="text" class="input-mini" name="pid" id="inputPid" placeholder="父ID" value="{{ category.pid |default:0 }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputOrderdisplay">排序</label>
+        <div class="controls">
+            <input type="text" class="input-mini" name="orderdisplay" id="inputOrderdisplay" placeholder="排序" value="{{ category.orderdisplay |default:0 }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputNewpage">新窗口打开</label>
+        <div class="controls">
+            <select class="input-small" name="newpage" id="inputNewpage">
+                <option value="0">否</option>
+                <option value="1" {% if category.newpage == 1 %} selected="selected"{% endif %}>是</option>
+            </select>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputIsurl">使用地址</label>
+        <div class="controls">
+            <select class="input-small" name="isurl" id="inputIsurl">
+                <option value="0">不使用</option>
+                <option value="1" {% if category.isurl == 1 %} selected="selected"{% endif %}>使用</option>
+            </select>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="inputStatus">状态</label>
+        <div class="controls">
+            <select class="input-small" name="status" id="inputStatus">
+                <option value="1">可用</option>
+                <option value="0" {% if category.status == 0 %} selected="selected"{% endif %}>不可用</option>
+            </select>
+        </div>
+    </div>
+</form>

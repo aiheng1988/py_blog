@@ -1,0 +1,19 @@
+<div class="span3 left">
+    <div class="sidebar-menu">
+        {% for nav in navs %}
+        <a href="javascript:void(0);" class="nav-header menu-first">
+            {{ nav.parent.name }}
+        </a>
+        <ul id="meun-{{ nav.parent.id }}" class="nav nav-list menu-second">
+            {% for s in nav.sons %}
+            {% if s.url %}
+            {% url s.url as this_url %}
+            {% endif %}
+            <li>
+                <a class="{% if request.path in s.accessurl %}menu-second-selected{% endif %}" href="{{ this_url }}"><i class="{{ s.icon |default:"icon-list" }}"></i> {{ s.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+    </div>
+</div>

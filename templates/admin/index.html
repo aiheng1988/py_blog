@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    欢迎访问后台管理
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

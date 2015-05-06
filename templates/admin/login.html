@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <form class="form-horizontal" id="loginForm" action="{% url 'auth'%}" method="post">
+            {% csrf_token %}
+            <section class="loginBox">
+                <section class="span2">
+                    <h2>用户登录</h2>
+                    <div class="input-prepend control-group">
+                        <span class="add-on"><i class="icon-user"></i></span>
+                        <input type="text" name="username" id="username" class="input-big"/>
+                    </div>
+                    <div class="input-prepend control-group">
+                        <span class="add-on"><i class="icon-lock"></i></span>
+                        <input type="password" name="password" id="password" class="input-big"/>
+                    </div>
+                    <section class="control-group span2">
+                        <button type="submit" class="btn btn-primary" id="loginButton">登录系统</button>
+                        <button type="button" class="btn" id="returnButton">返回</button>
+                    </section>
+                </section>
+            </section>
+        </form>
+    </div>
+{% endblock %}

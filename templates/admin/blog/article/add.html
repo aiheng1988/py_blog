@@ -1,0 +1,170 @@
+{% extends "admin/base.html" %}
+{% block title %}
+    网站后台管理-{{ nav.subNav.name }}
+{% endblock %}
+{% block content %}
+    {% include 'admin/top.html' %}
+    <div class="container body">
+        <div class="row">
+            <!-- left -->
+            {% include 'admin/menu.html' %}
+            <!-- right -->
+            <div class="span9">
+                <div class="well content">
+                    {% include "admin/nav.html" %}
+
+                    <form class="form-horizontal" method="POST" action="{% url 'article.add' %}" id="addArticleForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" id="inputId" value="{{ article.id }}" />
+                        <div class="control-group">
+                            <label class="control-label" for="inputTitle">文章标题</label>
+                            <div class="controls">
+                                <input type="text" class="input-xlarge required" name="title" id="inputTitle" placeholder="文章标题" value="{{ article.title }}" />
+                                <select class="input-medium" name="categoryid" id="inputCategoryid">
+                                    {% for category in categorys %}
+                                        <option value="{{ category.id }}" {% if article.categoryid == category.id %} selected="selected"{% endif %}>{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="inputUrlname">链接名称</label>
+                            <div class="controls">
+                                <input type="text" name="urlname" id="inputUrlname" placeholder="链接名称" value="{{ article.urlname }}" />
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputContent">
+                                <div class="tabbable tabs-left pull-right" style="width:120px;">
+                                    <ul class="nav nav-tabs pull-right" style="width:120px;">
+                                        <li class="active"><a href="#MD" onclick="return false;" data-toggle="tab">MarkDown编辑</a></li>
+                                        <li><a href="#KED" data-toggle="tab">HTML编辑器</a></li>
+                                    </ul>
+                                </div>
+                            </label>
+                            <div class="controls">
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="MD">
+                                        <textarea name="markdown" id="wmd-input"  style="width: 95%; height: 180px;" >{{ article.markdown }}</textarea>
+                                    </div>
+                                    <div class="tab-pane" id="KED">
+                                        <textarea name="content" id="inputContent" style="width:90%;height:220px;visibility:hidden;">{{ article.content }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputAddtime">发布日期</label>
+                            <div class="controls">
+                                <input type="text" name="addtime" id="inputAddtime" readonly="readonly" placeholder="发布日期" value="{{ article.addtime |default:now|date:"Y-m-d" }}" data-date-format="yyyy-mm-dd"/>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label" for="inputAuthor">作者</label>
+                            <div class="controls">
+                                <input type="text" class="input-small required" name="author" id="inputAuthor" placeholder="作者" value="{{ article.author |default:request.session.user }}" />
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">设置</label>
+                            <div class="controls">
+                                <input type="checkbox" style="display: none;"  name="istop" value="1" {% if article.istop == 1 %}checked="checked"{% endif %}/>
+                                <span class="tags{% if article.istop == 1 %}_checked{% endif %}">置顶</span>
+                                <input type="checkbox" style="display: none;"  name="status" value="1" {% if article.status == 1 %}checked="checked"{% endif %}/>
+                                <span class="tags{% if article.status == 1 %}_checked {% endif %}">可用</span>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <label class="control-label">标签</label>
+                            <div class="controls">
+                                {% for tag in tags %}
+                                    <input type="checkbox" style="display:none;" {% if tag.id in checkedtags %}checked="checked"{% endif %} id="tags_{{ tag.id }}" class="tags" name="tag" value="{{ tag.id }}" />
+                                    <span class="tags{% if tag.id in checkedtags %}_checked{% endif %}" data="{{ tag.id }}">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="save" class="btn btn-primary">{% if article.id %}修改文章{% else %}发布文章{% endif %}</button>
+                            <button type="reset" class="btn" onclick="return confirm('是否确认重新填写？');">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% load staticfiles %}
+<script type="text/javascript">
+var editor;
+KindEditor.ready(function(K) {
+    editor = K.create('textarea[name="content"]', {
+        resizeType : 1,
+        uploadJson : '{% url 'upload.json' %}',
+        allowPreviewEmoticons : false,
+        allowFileManager : false,
+        allowImageUpload : true,
+        fullscreenMode: false,
+        cssPath : '{% static 'css/ke-extends.css' %}',
+        afterChange : function() {
+            this.sync();
+        },
+        items : [
+            'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+            'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+            'insertunorderedlist', '|', 'emoticons', 'image', 'insertfile', 'link','code','source', 'fullscreen']
+    });
+});
+$(function(){
+    $("#addArticleForm")[0].reset();
+    $('#inputAddtime').datepicker();
+    $("span[class^=tags]").click(function(){
+        if($(this).attr("class") == "tags") {
+            $(this).prev("input[type='checkbox']").attr("checked", true);
+            $(this).removeClass().addClass("tags_checked");
+        } else {
+            $(this).prev("input[type='checkbox']").attr("checked", false);
+            $(this).removeClass().addClass("tags");
+        }
+    });
+    $("#save").click(function(){
+        var ok = true;
+        $(".required").each(function(){
+            if(!$(this).val()){
+                $.alert($(this).attr("placeholder") + "不能为空");
+                ok = false;
+                return false;
+            }
+        });
+        if(ok){
+            // 提交之前完成markdown等操作
+            if($("#wmd-preview").html() != "") {
+                $('#wmd-preview').find("pre").each(function(){
+                    var re = /-- lang: (.*?) --/;
+                    var r = re.exec($(this).html());
+                    $(this).addClass("brush: " + r[1] + "; toolbar: true; auto-links: false; ");
+                });
+                if($("#inputContent").val() != ""){
+                    $.confirm("是否确认使用markdown完成文章内容？", function(){
+                        $("#inputContent").val($("#wmd-preview").html());
+                        $("#addArticleForm").submit();
+                    });
+                } else {
+                    $("#addArticleForm").submit();
+                }
+            } else {
+                if($("#inputContent").val() == ""){
+                    $.alert("请输入文章内容？");
+                    return false;
+                }
+                $("#addArticleForm").submit();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
